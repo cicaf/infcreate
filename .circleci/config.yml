@@ -11,7 +11,7 @@ jobs:
         - image: amazon/aws-cli
       steps:
         - checkout # check out the code in the project directory
-        - run: 
+        - run
 	    name: Create Cloudformation Stack
 	    command: |
 	      aws cloudformation deploy \
