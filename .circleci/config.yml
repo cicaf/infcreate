@@ -7,44 +7,22 @@ orbs:
 # Define the jobs we want to run for this project
 jobs:
    create_infrastructure: 
-     docker:
-       - image: amazon/aws-cli
-     steps:
-       - checkout
-       - run:
-           name: Create Cloudformation Stack
-           command: |
-	    aws cloudformation deploy \
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run:
+          name: Create Cloudformation Stack
+          command: |
+            aws cloudformation deploy \
               --template-file template.yml \
-              --stack-name myStack \
-              --region us-west-1
-             # Exercise - Rollback
-       - destroy_environment
-AWSTemplateFormatVersion: 2010-09-09
-Description: ND9991 C3 L4 
-Resources:
-  EC2Instance:
-    Type: 'AWS::EC2::Instance'
-    Properties:
-      SecurityGroups:
-        - !Ref InstanceSecurityGroup
-      KeyName: AWS_Keypair_ND9991
-      ImageId: 'ami-09e67e426f25ce0d7' # you may need to find out what instance types are available in your region - use https://cloud-images.ubuntu.com/locator/ec2/
-      InstanceType: t3.micro
-  InstanceSecurityGroup:
-    Type: 'AWS::EC2::SecurityGroup'
-    Properties:
-      GroupDescription: Enable SSH access via port 22
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: '22'
-          ToPort: '22'
-          CidrIp: 0.0.0.0/0
- --stack-name myStack
+              --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5} \
+              --region us-west-2
       # Fail the job intentionally to simulate an error.
       # Uncomment the line below if you want to fail the current step
       # - run: return 1
-# Sequential workflow
+      - destroy_environment
+
 workflows:
   # Name the workflow
   myWorkflow:
